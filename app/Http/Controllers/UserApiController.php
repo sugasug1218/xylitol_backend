@@ -3,9 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Services\UserService;
+use App\Http\Services\ResponseService;
+use PDOException;
+
+// use function PHPUnit\Framework\returnSelf;
 
 class UserApiController extends Controller
 {
+    public function __construct(
+        UserService $userService,
+        ResponseService $responseService
+    ) {
+        $this->userService = $userService;
+        $this->responseService = $responseService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,11 +26,16 @@ class UserApiController extends Controller
      */
     public function index()
     {
-        return "おばか";
+        return response()->json([
+            'status'=> 1,
+            'message' => 'パラメータエラー'
+        ], 200);
     }
 
+
+
     /**
-     * Show the form for creating a new resource.
+     * ユーザー情報を追加
      *
      * @return \Illuminate\Http\Response
      */

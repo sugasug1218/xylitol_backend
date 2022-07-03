@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +18,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
+// ログイン処理
+Route::post('/login', [AuthController::class, 'login']);
+
+// ログイン前ユーザーは入れない
+Route::middleware('auth:api')->group(function () {
+    Route::get('/test', [UserApiController::class, 'index']);
+});
 
 
-Route::get('/test', [UserApiController::class, 'index']);
+// 仮登録
+Route::post('/preRegister', [RegisterController::class, 'preRegister']);
+
+Route::post('/regist/preUser', [UserApiController::class, 'createPreUser']);
