@@ -20,14 +20,49 @@ class UserService extends ResponseService
 
     /**
      * 仮ユーザー登録をします
-     * @param
+     * @param string $email
+     * @return string
      */
     public function createPreUser($email)
     {
-        $id = $this->preUsers->createPreUserByRequst($email);
+        $id = $this->preUsers->createPreUserByRequest($email);
         if (!$id) {
             throw new RuntimeException($this->getErrorMessage(ResponseType::PARAM_ERROR), ResponseType::PARAM_ERROR);
         }
-        return $this->preUsers->getRegistToken($id);
+        $token = $this->preUsers->getRegistToken($id);
+        return [
+            'id' => $id,
+            'token' => $token
+        ];
+    }
+
+    /**
+     * 本登録ユーザーを追加します
+     *
+     * @param array $param
+     * @return void
+     */
+    public function register($param)
+    {
+        $data = $this->users->registerByRequest($param);
+        if (!$data) {
+            throw new RuntimeException($this->getErrorMessage(ResponseType::DB_ERROR), ResponseType::DB_ERROR);
+        }
+        return $data;
+    }
+
+    /**
+     * 仮登録ユーザーの登録ステータスを更新します
+     *
+     * @param int $id
+     * @return void
+     */
+    public function updatePreUser($id)
+    {
+        $res = $this->preUsers->updateRegistStatus($id);
+        if (!$res) {
+            throw new RuntimeException($this->getErrorMessage(ResponseType::DB_ERROR), ResponseType::DB_ERROR);
+        }
+        return true;
     }
 }

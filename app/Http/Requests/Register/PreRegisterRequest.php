@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Register;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ApiBaseRequest;
 
 class PreRegisterRequest extends ApiBaseRequest

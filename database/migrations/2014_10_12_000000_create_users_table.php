@@ -15,12 +15,13 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->integer('preUser_id');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('api_token', 80)->unique()->nullable()->default(null);
-            $table->boolean('is_admin')->default(false)->comment('true:管理者権限あり'); // 管理権限の有無
+            $table->integer('is_admin')->comment('1:管理者権限あり'); // 管理権限の有無
             $table->rememberToken();
             $table->timestamps();
         });

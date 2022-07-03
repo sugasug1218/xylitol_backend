@@ -42,7 +42,7 @@ class Handler extends ExceptionHandler
         $responseService = new ResponseService();
 
         if ($e instanceof PDOException) {
-            return $responseService->pdoExceptionResponse();
+            // return $responseService->pdoExceptionResponse();
         } elseif ($e instanceof RuntimeException) {
             return $responseService->runtimeExceptionResponse($e);
         } elseif ($e instanceof AuthenticationException) {

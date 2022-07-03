@@ -31,4 +31,7 @@ Route::middleware('auth:api')->group(function () {
 // 仮登録
 Route::post('/preRegister', [RegisterController::class, 'preRegister']);
 
+// 本登録
+Route::post('/register', [RegisterController::class, 'register']);
+
 Route::post('/regist/preUser', [UserApiController::class, 'createPreUser']);
