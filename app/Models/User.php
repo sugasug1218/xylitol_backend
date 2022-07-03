@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use App\Models\Authorization;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'preUser_id',
         'name',
         'email',
         'password',
@@ -46,12 +47,29 @@ class User extends Authenticatable
     ];
 
     /**
-     * Authorizationとのリレーション定義
+     * 顧客1件のエンティティを作ります
+     *
+     * @param int $id
+     * @return collection
+     */
+    private function getUserById($id)
+    {
+        //
+    }
+
+    /**
+     * ユーザーの追加
      *
      * @return void
      */
-    public function authorization()
+    public function registerByRequest($option)
     {
-        return $this->hasMany(Authorization::class);
+        return User::create([
+            'preUser_id' => $option['preId'],
+            'name' => $option['name'],
+            'email' => $option['email'],
+            'password' => Hash::make($option['password']),
+            'is_admin' => $option['is_admin']
+        ])->toArray();
     }
 }

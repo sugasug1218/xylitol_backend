@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Register;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiBaseRequest;
 
-class RegisterRequest extends FormRequest
+class RegisterRequest extends ApiBaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class RegisterRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'preId' => 'required | integer',
+            'name' => 'required | string | min:4',
+            'email' => 'required | email',
+            'password' => 'required | string | min:8 | max:20 ',
+            'is_admin' => 'integer | between:0,1'
         ];
     }
 }

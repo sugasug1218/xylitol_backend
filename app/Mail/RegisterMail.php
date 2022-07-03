@@ -20,7 +20,6 @@ class RegisterMail extends Mailable
     {
         $this->email = $email;
         $this->sub = "【xylitol事務局】本登録のご案内";
-        // $this->url = "https://www.google.com/?hl=ja";
         $this->url = $url;
     }
 
