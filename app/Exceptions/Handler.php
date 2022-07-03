@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Http\Services\ResponseService;
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use PDOException;
+use RuntimeException;
 use Throwable;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -30,12 +35,23 @@ class Handler extends ExceptionHandler
     /**
      * Register the exception handling callbacks for the application.
      *
-     * @return void
+     *
      */
-    public function register()
+    public function render($request, Throwable $e)
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        $responseService = new ResponseService();
+
+        if ($e instanceof PDOException) {
+            return $responseService->pdoExceptionResponse();
+        } elseif ($e instanceof RuntimeException) {
+            return $responseService->runtimeExceptionResponse($e);
+        } elseif ($e instanceof AuthenticationException) {
+            return $responseService->AuthenticationExceptionResponse();
+        }
+        // elseif ($e instanceof Exception) {
+        //     return $responseService->unknownExceptionResponse();
+        // }
+
+        return parent::render($request, $e);
     }
 }

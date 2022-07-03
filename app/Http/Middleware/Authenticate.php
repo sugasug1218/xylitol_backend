@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use App\Http\Services\ResponseService;
 
 class Authenticate extends Middleware
 {
@@ -14,8 +15,10 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+        $responseService = new ResponseService();
         if (! $request->expectsJson()) {
-            return route('login');
+            return $responseService->AuthenticationExceptionResponse();
+            // return route('login');
         }
     }
 }
