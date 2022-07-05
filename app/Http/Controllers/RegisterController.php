@@ -7,6 +7,7 @@ use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use App\Http\Requests\Register\PreRegisterRequest;
 use App\Http\Requests\Register\RegisterRequest;
+use App\Http\Requests\Register\AuthTokenRequest;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RegisterMail;
 
@@ -38,11 +39,16 @@ class RegisterController extends Controller
             'name',
             'email',
             'password',
-            'is_admin'
+            'is_admin',
+            'token'
         ]);
         if (!isset($param['is_admin'])) {
             $param['is_admin'] = 0;
         }
+        if (isset($param['preId'])) {
+            $param['preId'] = intval($param['preId']);
+        }
+
         return $param;
     }
 
@@ -54,23 +60,24 @@ class RegisterController extends Controller
      */
     protected function makeRegisterPageUrl($data)
     {
-        return $this->registUrl . "?preId=" . $data['id'] . "?token=" . $data['token'];
+        $url = $this->registUrl . "?preId=" . $data['id'] . "&token=" . $data['token'];
+        return $url;
     }
 
     /**
      * 仮登録ユーザーを追加します
      *
      * @param Request $request
-     * @return void
+     * @return json
      */
     public function preRegister(PreRegisterRequest $request)
     {
         $param = $this->getParam($request);
         $email = $param['email'];
-
-        $data = $this->userService->createPreUser($email);
+        $data = $this->userService->createPreUserService($email);
         $url = $this->makeRegisterPageUrl($data);
-        return $this->sendRegisterMail($email, $url);
+        $this->sendRegisterMail($email, $url);
+        return $this->responseService->successResponse();
     }
 
     /**
@@ -83,31 +90,40 @@ class RegisterController extends Controller
     private function sendRegisterMail($email, $url)
     {
         Mail::send(new RegisterMail($email, $url));
-        return $this->responseService->successResponse();
     }
 
     /**
      * 本登録ユーザーを追加します
      *
      * @param RegisterRequest $request
-     * @return void
+     * @return json
      */
     public function register(RegisterRequest $request)
     {
         $param = $this->getParam($request);
-        $data = $this->userService->register($param);
+        $data = $this->userService->registerService($param);
         $this->updatePreUser($data);
         return $this->responseService->successResponse();
-        // return $this->responseService->successResponseData($data);
     }
 
     /**
      * 仮登録ユーザーの状態を更新します
      * @param int $id
-     * @return void
      */
     private function updatePreUser($id)
     {
-        $this->userService->updatePreUser($id);
+        $this->userService->updatePreUserService($id);
+    }
+
+    /**
+     * ワンタイムトークンを認証します
+     * @param AuthTokenRequest $request
+     * @return json
+     */
+    public function AuthToken(AuthTokenRequest $request)
+    {
+        $param = $this->getParam($request);
+        $result = $this->userService->AuthTokenService($param);
+        return $result;
     }
 }

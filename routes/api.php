@@ -31,6 +31,9 @@ Route::middleware('auth:api')->group(function () {
 // 仮登録
 Route::post('/preRegister', [RegisterController::class, 'preRegister']);
 
+// ワンタイムトークン認証
+Route::post('/authToken', [RegisterController::class, 'AuthToken']);
+
 // 本登録
 Route::post('/register', [RegisterController::class, 'register']);
 
