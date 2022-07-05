@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use App\Models\PreUser;
 
 class User extends Authenticatable
 {
@@ -64,10 +65,12 @@ class User extends Authenticatable
      */
     public function registerByRequest($option)
     {
+        $preUser = PreUser::where("id", "=", $option['preId'])->first();
+        $email = $preUser['email'];
         return User::create([
             'preUser_id' => $option['preId'],
             'name' => $option['name'],
-            'email' => $option['email'],
+            'email' => $email,
             'password' => Hash::make($option['password']),
             'is_admin' => $option['is_admin']
         ])->toArray();

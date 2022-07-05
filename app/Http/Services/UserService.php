@@ -6,10 +6,14 @@ use App\Models\User;
 use App\Models\PreUser;
 use App\Http\Services\ResponseService;
 use App\Enums\ResponseType;
+use DateTime;
 use RuntimeException;
+use Carbon\Carbon;
 
 class UserService extends ResponseService
 {
+    private $accessDateTime;
+
     public function __construct(
         User $user,
         PreUser $preUser
@@ -23,13 +27,13 @@ class UserService extends ResponseService
      * @param string $email
      * @return string
      */
-    public function createPreUser($email)
+    public function createPreUserService($email)
     {
         $id = $this->preUsers->createPreUserByRequest($email);
         if (!$id) {
             throw new RuntimeException($this->getErrorMessage(ResponseType::PARAM_ERROR), ResponseType::PARAM_ERROR);
         }
-        $token = $this->preUsers->getRegistToken($id);
+        $token = $this->preUsers->getToken($id);
         return [
             'id' => $id,
             'token' => $token
@@ -42,7 +46,7 @@ class UserService extends ResponseService
      * @param array $param
      * @return void
      */
-    public function register($param)
+    public function registerService($param)
     {
         $data = $this->users->registerByRequest($param);
         if (!$data) {
@@ -57,12 +61,34 @@ class UserService extends ResponseService
      * @param int $id
      * @return void
      */
-    public function updatePreUser($id)
+    public function updatePreUserService($id)
     {
-        $res = $this->preUsers->updateRegistStatus($id);
-        if (!$res) {
-            throw new RuntimeException($this->getErrorMessage(ResponseType::DB_ERROR), ResponseType::DB_ERROR);
+        $this->preUsers->updateRegistStatus($id);
+    }
+
+    /**
+     * ワンタイムトークンを認証します
+     * @param array $data
+     * @return void
+     */
+    public function AuthTokenService($data)
+    {
+        // 現在日時を取得する
+        $Limit = $this->getTokenLimit();
+        $result = $this->preUsers->checkTokenByRequest($Limit, $data);
+        if (empty($result)) {
+            throw new RuntimeException($this->getErrorMessage(ResponseType::AUTH_ERROR), ResponseType::AUTH_ERROR);
         }
-        return true;
+        return $result;
+    }
+
+    /**
+     * 現在時刻を取得します
+     *
+     * @return string
+     */
+    private function getTokenLimit()
+    {
+        return date("Y-m-d H:i:s", strtotime("+24 hour"));
     }
 }

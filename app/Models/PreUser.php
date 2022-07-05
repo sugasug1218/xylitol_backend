@@ -16,7 +16,6 @@ class PreUser extends Model
         'regist_status'
     ];
 
-
     /**
      * エンティティ生成
      * @param int $id
@@ -46,7 +45,7 @@ class PreUser extends Model
      * @param int $id
      * @return void
      */
-    public function getRegistToken($id)
+    public function getToken($id)
     {
         $user = PreUser::find($id)->toArray();
         return $user['access_token'];
@@ -59,8 +58,26 @@ class PreUser extends Model
      */
     public function updateRegistStatus($id)
     {
-        return PreUser::find($id)->first()->update([
+        return PreUser::where("id", "=", $id)->update([
             'regist_status' => 1
         ]);
+    }
+
+    /**
+     * ワンタイムトークンの有効性をチェックします
+     *  - idが存在している
+     *  - tokenが存在している
+     *  - created_atが24時間以内
+     * @param string $now
+     * @param array $data
+     * @return void
+     */
+    public function checkTokenByRequest($now, $data)
+    {
+        return PreUser::where("id", "=", $data['preId'])
+            ->where("access_token", "=", $data['token'])
+            ->where("created_at", "<", $now)
+            ->where("regist_status", "=", 0)
+            ->first();
     }
 }
