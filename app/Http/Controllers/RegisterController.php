@@ -123,7 +123,7 @@ class RegisterController extends Controller
     public function AuthToken(AuthTokenRequest $request)
     {
         $param = $this->getParam($request);
-        $result = $this->userService->AuthTokenService($param);
-        return $result;
+        $this->userService->AuthTokenService($param);
+        return $this->responseService->successResponse();
     }
 }
