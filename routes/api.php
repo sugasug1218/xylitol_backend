@@ -37,4 +37,4 @@ Route::post('/authToken', [RegisterController::class, 'AuthToken']);
 // 本登録
 Route::post('/register', [RegisterController::class, 'register']);
 
-Route::post('/regist/preUser', [UserApiController::class, 'createPreUser']);
+// Route::post('/regist/preUser', [UserApiController::class, 'createPreUser']);
