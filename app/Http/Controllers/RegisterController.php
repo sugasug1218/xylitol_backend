@@ -22,7 +22,7 @@ class RegisterController extends Controller
     ) {
         $this->userService = $userService;
         $this->responseService = $responseService;
-        $this->registUrl = "http://localhost:3000/mainRegistation";
+        $this->registUrl = "http://localhost:3000/Registation";
     }
 
     /**
@@ -73,10 +73,8 @@ class RegisterController extends Controller
     public function preRegister(PreRegisterRequest $request)
     {
         $param = $this->getParam($request);
-        $email = $param['email'];
-        $data = $this->userService->createPreUserService($email);
-        $url = $this->makeRegisterPageUrl($data);
-        $this->sendRegisterMail($email, $url);
+        $data = $this->userService->createPreUserService($param['email']);
+        $this->sendRegisterMail($param['email'], $this->makeRegisterPageUrl($data));
         return $this->responseService->successResponse();
     }
 
@@ -85,7 +83,6 @@ class RegisterController extends Controller
      *
      * @param string $email
      * @param string $url
-     * @return json
      */
     private function sendRegisterMail($email, $url)
     {
@@ -125,5 +122,25 @@ class RegisterController extends Controller
         $param = $this->getParam($request);
         $this->userService->AuthTokenService($param);
         return $this->responseService->successResponse();
+    }
+
+
+    /**
+     * 本登録未完了ユーザーへのフォロー
+     *  - 仮登録後、本登録が完了していないユーザーに対しフォローメールを送信
+     *  - 同時にワンタイムトークンを再発行して期限をリフレッシュする
+     *
+     * @return void
+     */
+    public function IncompleteUserFollow()
+    {
+        //
+        /**
+         * 処理の流れ
+         * 対象：仮登録済み、状態が完了になっていないユーザー、フォロー回数が3回未満（3回上限）
+         * ・抽出した対象のワンタイムトークンをリフレッシュする
+         * ・
+         * 
+         */
     }
 }

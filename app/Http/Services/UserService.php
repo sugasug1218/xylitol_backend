@@ -6,14 +6,10 @@ use App\Models\User;
 use App\Models\PreUser;
 use App\Http\Services\ResponseService;
 use App\Enums\ResponseType;
-use DateTime;
 use RuntimeException;
-use Carbon\Carbon;
 
 class UserService extends ResponseService
 {
-    private $accessDateTime;
-
     public function __construct(
         User $user,
         PreUser $preUser
@@ -33,10 +29,9 @@ class UserService extends ResponseService
         if (!$id) {
             throw new RuntimeException($this->getErrorMessage(ResponseType::PARAM_ERROR), ResponseType::PARAM_ERROR);
         }
-        $token = $this->preUsers->getToken($id);
         return [
             'id' => $id,
-            'token' => $token
+            'token' => $this->preUsers->getToken($id)
         ];
     }
 
@@ -48,8 +43,10 @@ class UserService extends ResponseService
      */
     public function registerService($param)
     {
+        $this->exitsCheck($param['preId']);
+        $param['email'] = PreUser::find($param['preId'])->email;
         $data = $this->users->registerByRequest($param);
-        if (!$data) {
+        if (is_null($data)) {
             throw new RuntimeException($this->getErrorMessage(ResponseType::DB_ERROR), ResponseType::DB_ERROR);
         }
         return $data;
@@ -74,9 +71,9 @@ class UserService extends ResponseService
     public function AuthTokenService($data)
     {
         // 現在日時を取得する
-        $Limit = $this->getTokenLimit();
-        $result = $this->preUsers->checkTokenByRequest($Limit, $data);
-        if (empty($result)) {
+        $limit = $this->getTokenLimit();
+        $result = $this->preUsers->checkTokenByRequest($limit, $data);
+        if (is_null($result)) {
             throw new RuntimeException($this->getErrorMessage(ResponseType::AUTH_ERROR), ResponseType::AUTH_ERROR);
         }
         return $result;
@@ -90,5 +87,20 @@ class UserService extends ResponseService
     private function getTokenLimit()
     {
         return date("Y-m-d H:i:s", strtotime("+24 hour"));
+    }
+
+    /**
+     * メールアドレスが既に登録済みかチェックします
+     *
+     * @param int $preId
+     * @return void
+     */
+    private function exitsCheck($preId)
+    {
+        $target = PreUser::PreId($preId)->first();
+        $exits_check = User::UserEmail($target['email'])->first();
+        if (!is_null($exits_check)) {
+            throw new RuntimeException($this->getErrorMessage(ResponseType::EXISTS_ERROR), ResponseType::EXISTS_ERROR);
+        }
     }
 }

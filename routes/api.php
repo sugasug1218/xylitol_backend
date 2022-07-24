@@ -28,13 +28,6 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
-// 仮登録
-Route::post('/preRegister', [RegisterController::class, 'preRegister']);
-
-// ワンタイムトークン認証
-Route::post('/authToken', [RegisterController::class, 'AuthToken']);
-
-// 本登録
-Route::post('/register', [RegisterController::class, 'register']);
-
-// Route::post('/regist/preUser', [UserApiController::class, 'createPreUser']);
+Route::post('/preRegister', [RegisterController::class, 'preRegister']); // 仮登録
+Route::post('/authToken', [RegisterController::class, 'AuthToken']); // ワンタイムトークン認証
+Route::post('/register', [RegisterController::class, 'register']); // 本登録

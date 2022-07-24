@@ -27,8 +27,8 @@ class UserApiController extends Controller
     public function index()
     {
         return response()->json([
-            'status'=> 1,
-            'message' => 'パラメータエラー'
+            'status' => 0,
+            'message' => 'トークン正しいよ'
         ], 200);
     }
 

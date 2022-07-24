@@ -21,9 +21,9 @@ class PreUser extends Model
      * @param int $id
      * @return void
      */
-    private function getPreUserById($id)
+    public function scopePreId($query, $id)
     {
-        return PreUser::find($id);
+        return $query->where("id", "=", $id);
     }
 
     /**
@@ -39,7 +39,7 @@ class PreUser extends Model
         ]);
         return $user->id;
     }
-    
+
     /**
      * 本登録URL生成のためのワンタイムトークンを取得します
      * @param int $id
@@ -68,15 +68,15 @@ class PreUser extends Model
      *  - idが存在している
      *  - tokenが存在している
      *  - created_atが24時間以内
-     * @param string $now
+     * @param string $limit
      * @param array $data
      * @return void
      */
-    public function checkTokenByRequest($now, $data)
+    public function checkTokenByRequest($limit, $data)
     {
         return PreUser::where("id", "=", $data['preId'])
             ->where("access_token", "=", $data['token'])
-            ->where("created_at", "<", $now)
+            ->where("created_at", "<", $limit)
             ->where("regist_status", "=", 0)
             ->first();
     }

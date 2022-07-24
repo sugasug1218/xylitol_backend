@@ -48,14 +48,23 @@ class User extends Authenticatable
     ];
 
     /**
-     * 顧客1件のエンティティを作ります
+     * 顧客1件のスコープ(id)
      *
      * @param int $id
-     * @return collection
+     * @return void
      */
-    private function getUserById($id)
+    public function scopeUserId($query, $id)
     {
-        //
+        return $query->where("id", "=", $id);
+    }
+
+    /**
+     * emailのスコープ(email)
+     * @param string $email
+     */
+    public function scopeUserEmail($query, $email)
+    {
+        return $query->where("email", "=", $email);
     }
 
     /**
@@ -65,14 +74,12 @@ class User extends Authenticatable
      */
     public function registerByRequest($option)
     {
-        $preUser = PreUser::where("id", "=", $option['preId'])->first();
-        $email = $preUser['email'];
         return User::create([
             'preUser_id' => $option['preId'],
             'name' => $option['name'],
-            'email' => $email,
+            'email' => $option['email'],
             'password' => Hash::make($option['password']),
             'is_admin' => $option['is_admin']
-        ])->toArray();
+        ]);
     }
 }

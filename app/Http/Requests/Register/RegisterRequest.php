@@ -24,7 +24,7 @@ class RegisterRequest extends ApiBaseRequest
     public function rules()
     {
         return [
-            'preId' => 'required | integer',
+            'preId' => 'required | integer | exists:pre_users,id',
             'name' => 'required | string | min:4',
             'password' => 'required | string | min:8',
             'is_admin' => 'integer | between:0,1'

@@ -91,6 +91,12 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'testing' => [
+            'driver' => 'sqlite',
+            'database' => ':memory:', //SQLiteのインメモリ機能を使用する
+            'prefix' => ""
+        ],
+
     ],
 
     /*
