@@ -47,7 +47,7 @@ class ResponseService
             ]
         ], ResponseType::SUCCESS);
     }
-    
+
     /**
      * 認証エラーレスポンス
      *
